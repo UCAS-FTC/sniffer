@@ -7,7 +7,7 @@ from PyQt6.QtCore import QObject, QThread, pyqtSlot, pyqtSignal
 from PyQt6.QtWidgets import QTableWidgetItem, QApplication
 from qt_material import apply_stylesheet
 from scapy.all import *
-from scapy.layers.l2 import Ether
+from scapy import interfaces
 
 from ui.mainWindowInit import mainWindowInit
 from controller.CatchModel import CatchServer
@@ -23,8 +23,12 @@ class MainWindowController(QObject):
 
         # 创建新进程
         self.catch_thread = QThread()
-        self.open_file_thread = QThread()
         self.catch_server = CatchServer()
+
+        # 将服务绑定至线程
+        self.catch_server.moveToThread(self.catch_thread)
+        self.catch_thread.started.connect(self.catch_server.start_sniffing)
+        self.catch_thread.start()
 
         # 对MainWindow中的功能进行绑定
         self.main_window_view.closeButton.clicked.connect(self.safeQuit)
@@ -44,12 +48,11 @@ class MainWindowController(QObject):
 
         # 获取当前网卡
         interface = self.main_window_view.Interface.currentText()
+
         # 开始捕获数据包
         self.catch_server._interface = interface
-        self.catch_server._is_active = True
+        self.catch_server.isActive = True
 
-        self.catch_thread.started.connect(self.catch_server.start_sniffing(""))
-        self.catch_thread.start()
 
     def doPause(self) -> None:
         """
@@ -76,9 +79,28 @@ class MainWindowController(QObject):
         self.main_window_view.close()
 
     def load_network_interfaces(self):
+        # 可能有些网卡不工作
         interfaces = psutil.net_if_addrs()
         interface_names = list(interfaces.keys())
         self.main_window_view.Interface.addItems(interface_names)
+
+        """
+        # 仅显示在工作中的网卡
+        # 获取网络接口的状态
+        interfaces = psutil.net_if_stats()
+
+        # 列出活动的网络接口
+        active_interfaces = []
+        for interface, stats in interfaces.items():
+            if stats.isup:  # 检查接口是否启用
+                active_interfaces.append(interface)
+                print(f"Active Interface: {interface}, Speed: {stats.speed} Mbps")
+
+        if not active_interfaces:
+            print("No active network interfaces found.")
+        self.main_window_view.Interface.addItems(active_interfaces)
+        """
+
 
     def update_table(self, src, dst, summary):
         """更新表格"""

@@ -21,20 +21,29 @@ class CatchServer(QObject):
     _counter = 0
     sniff_filter = ""
 
-    def start_sniffing(self, sniff_filter):
-        print( self._interface)
+    def start_sniffing(self):
+        print(self._interface)
         while True:
-            print("等待捕获数据包...")
-            # 捕获一个数据包
-            packets = sniff(count=1, filter=sniff_filter, iface=self._interface)
-            # 处理捕获的数据包
-            for packet in packets:
-                # 打印数据包摘要
-                print(packet.summary())
-                # 如果数据包是IP数据包，打印源IP和目标IP
-                if packet.haslayer(IP):
-                    ip_layer = packet.getlayer(IP)
-                    print(f"Source IP: {ip_layer.src}, Destination IP: {ip_layer.dst}")
+            if self.isQuit:
+                break
+            if self.isActive:
+                try:
+                    self._counter = 0
+                    sniff_filter = "ether proto 0x0800 or ether proto 0x86dd or ether proto 0x11 or ether proto 0x0806"
+                    print("等待捕获数据包...")
+                    # 捕获一个数据包
+                    print(self._interface)
+                    packets = sniff(count=1, filter=sniff_filter, iface=self._interface)
+                    # 处理捕获的数据包
+                    for packet in packets:
+                        # 打印数据包摘要
+                        print(packet.summary())
+                        # 如果数据包是IP数据包，打印源IP和目标IP
+                        if packet.haslayer(IP):
+                            ip_layer = packet.getlayer(IP)
+                            print(f"Source IP: {ip_layer.src}, Destination IP: {ip_layer.dst}")
+                except Exception as e:
+                    print(f"Error occurred: {e}")
 
     @property
     def interFace(self) -> scapy.arch.windows.NetworkInterface_Win:
