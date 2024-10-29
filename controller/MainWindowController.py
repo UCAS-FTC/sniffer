@@ -3,14 +3,16 @@ import sys
 
 import psutil
 import scapy
-from PyQt6.QtCore import QObject, QThread, pyqtSlot, pyqtSignal
-from PyQt6.QtWidgets import QTableWidgetItem, QApplication
+from PyQt6.QtCore import QObject, QThread, pyqtSlot, pyqtSignal, Qt
+from PyQt6.QtWidgets import QTableWidgetItem, QApplication, QTextEdit
 from qt_material import apply_stylesheet
 from scapy.all import *
+from scapy.layers.l2 import Ether
 from scapy import interfaces
 
 from ui.mainWindowInit import mainWindowInit
 from controller.CatchModel import CatchServer
+
 
 class MainWindowController(QObject):
     def __init__(self):
@@ -18,12 +20,18 @@ class MainWindowController(QObject):
         self.main_window_view = mainWindowInit()
         self.main_window_view.show()
 
+        # 暂存的包
+        self.stored_packets = list()
+
         # 获取网卡设备并显示在下拉框中
         self.load_network_interfaces()
 
         # 创建新进程
         self.catch_thread = QThread()
         self.catch_server = CatchServer()
+
+        # 连接信号和槽
+        self.catch_server.packet_captured.connect(self.update_table)
 
         # 将服务绑定至线程
         self.catch_server.moveToThread(self.catch_thread)
@@ -35,6 +43,10 @@ class MainWindowController(QObject):
         self.main_window_view.minButton.clicked.connect(self.main_window_view.showMinimized)
         self.main_window_view.startButton.clicked.connect(self.doCapture)
         self.main_window_view.stopButton.clicked.connect(self.doPause)
+        self.main_window_view.tableWidget.cellClicked.connect(self.show_detail)
+        # self.main_window_view.treeWidget.clicked.connect(self.show_tree)
+
+        self.catch_server.current_packet.connect(self.storeTempCapturedPackets)
 
     def doCapture(self) -> None:
         """
@@ -101,14 +113,44 @@ class MainWindowController(QObject):
         self.main_window_view.Interface.addItems(active_interfaces)
         """
 
-
-    def update_table(self, src, dst, summary):
+    def update_table(self, index, capture_time, src_ip, dst_ip, protocol, length, details):
         """更新表格"""
         row_position = self.main_window_view.tableWidget.rowCount()
         self.main_window_view.tableWidget.insertRow(row_position)
-        self.main_window_view.tableWidget.setItem(row_position, 0, QTableWidgetItem(src))
-        self.main_window_view.tableWidget.setItem(row_position, 1, QTableWidgetItem(dst))
-        self.main_window_view.tableWidget.setItem(row_position, 2, QTableWidgetItem(summary))
+
+        self.main_window_view.tableWidget.setItem(row_position, 0, QTableWidgetItem(str(index)))
+        self.main_window_view.tableWidget.setItem(row_position, 1, QTableWidgetItem(capture_time))
+        self.main_window_view.tableWidget.setItem(row_position, 2, QTableWidgetItem(src_ip))
+        self.main_window_view.tableWidget.setItem(row_position, 3, QTableWidgetItem(dst_ip))
+        self.main_window_view.tableWidget.setItem(row_position, 4, QTableWidgetItem(protocol))
+        self.main_window_view.tableWidget.setItem(row_position, 5, QTableWidgetItem(str(length)))
+        self.main_window_view.tableWidget.setItem(row_position, 6, QTableWidgetItem(details))
+
+    def show_detail(self, row: int) -> None:
+        """
+        显示所选择的数据包的帧详情
+        :rtype: None
+        :param row: int, chosen row
+        """
+        textEdit = QTextEdit()
+        textEdit.setReadOnly(True)
+        print(row)
+        packet_detail = hexdump(self.stored_packets[row], dump=True)
+        print(packet_detail)
+        self.main_window_view.textEdit.clear()  # 清除之前的内容
+        self.main_window_view.textEdit.setPlainText(packet_detail)  # 设置详细信息
+
+    @pyqtSlot(scapy.layers.l2.Ether)
+    def storeTempCapturedPackets(self, pkt: scapy.layers.l2.Ether) -> None:
+        """
+        暂存已捕获的包数据
+        :param pkt: 由catch_server捕获并返回的数据包
+        :rtype: None
+        """
+        self.stored_packets.append(pkt)
+
+
+
 
 if __name__ == '__main__':
     os.chdir("../")  # 改变工作目录

@@ -6,12 +6,12 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>930</width>
-    <height>656</height>
+    <width>1132</width>
+    <height>669</height>
    </rect>
   </property>
   <property name="sizePolicy">
-   <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+   <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
     <horstretch>0</horstretch>
     <verstretch>0</verstretch>
    </sizepolicy>
@@ -22,9 +22,9 @@
   <widget class="QWidget" name="widget" native="true">
    <property name="geometry">
     <rect>
-     <x>9</x>
-     <y>9</y>
-     <width>906</width>
+     <x>10</x>
+     <y>10</y>
+     <width>1111</width>
      <height>48</height>
     </rect>
    </property>
@@ -210,7 +210,7 @@
     <rect>
      <x>10</x>
      <y>60</y>
-     <width>901</width>
+     <width>1111</width>
      <height>30</height>
     </rect>
    </property>
@@ -232,8 +232,8 @@
     <rect>
      <x>10</x>
      <y>100</y>
-     <width>911</width>
-     <height>541</height>
+     <width>1111</width>
+     <height>551</height>
     </rect>
    </property>
    <property name="orientation">

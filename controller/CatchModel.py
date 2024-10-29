@@ -1,17 +1,19 @@
 import scapy
+from OpenSSL import SSL
 from PyQt6.QtCore import QObject, pyqtSignal
 from scapy.all import *
-from scapy.layers.inet import IP
-from scapy.layers.l2 import Ether, ARP
 from scapy.all import sniff
-from scapy.layers.inet import IP
+from scapy.layers.dns import DNS
+from scapy.layers.inet import IP, TCP, UDP, ICMP
+from scapy.layers.inet6 import IPv6
 from scapy.layers.l2 import ARP
 from scapy import arch
+from scapy.layers.tls.record import TLS
 
-from custom.packetAnalyser import getIPLayerAddr, getHighestProtocol, getARPLayerAddr
+from custom.packetAnalyser import Analyser
 
 
-class CatchServer(QObject):
+class CatchServer(QObject, Analyser):
     def __init__(self):
         super(CatchServer, self).__init__()
 
@@ -21,8 +23,12 @@ class CatchServer(QObject):
     _counter = 0
     sniff_filter = ""
 
+    # 捕获包信号
+    current_packet = pyqtSignal(scapy.layers.l2.Ether)
+    packet_captured = pyqtSignal(int, str, str, str, str, int, str)  # 新增信号
+
     def start_sniffing(self):
-        print(self._interface)
+        index = 0
         while True:
             if self.isQuit:
                 break
@@ -30,18 +36,42 @@ class CatchServer(QObject):
                 try:
                     self._counter = 0
                     sniff_filter = "ether proto 0x0800 or ether proto 0x86dd or ether proto 0x11 or ether proto 0x0806"
-                    print("等待捕获数据包...")
                     # 捕获一个数据包
                     print(self._interface)
                     packets = sniff(count=1, filter=sniff_filter, iface=self._interface)
-                    # 处理捕获的数据包
-                    for packet in packets:
-                        # 打印数据包摘要
-                        print(packet.summary())
-                        # 如果数据包是IP数据包，打印源IP和目标IP
-                        if packet.haslayer(IP):
-                            ip_layer = packet.getlayer(IP)
-                            print(f"Source IP: {ip_layer.src}, Destination IP: {ip_layer.dst}")
+
+                    # 处理数据包
+                    for pkt in packets:
+
+                        # 初始化数据
+                        index += 1
+                        capture_time = time.strftime('%Y-%m-%d %H:%M:%S', time.localtime())
+                        src_ip = dst_ip = ""
+                        protocol = ""
+                        length = len(pkt)
+                        details = pkt.summary()
+
+                        # 源地址与目的地址
+                        if pkt.haslayer(IP):
+                            src_ip = pkt[IP].src
+                            dst_ip = pkt[IP].dst
+                        elif pkt.haslayer(IPv6):
+                            src_ip = pkt[IPv6].src
+                            dst_ip = pkt[IPv6].dst
+
+                        # 解析协议
+                        self.DataLinkLayer = ""  # 数据链路层
+                        self.NetworkLayer = ""  # 网络层
+                        self.TransportLayer = ""  # 传输层
+                        self.PresentationLayer = ""  # 表示层
+                        self.ApplicationLayer = ""  # 应用层
+                        protocol = self.analysePacket(pkt)
+                        if "200 OK" in details:
+                            protocol = "HTTP"
+
+                        # 发射信号更新表格
+                        self.packet_captured.emit(index, capture_time, src_ip, dst_ip, protocol, length, details)
+                        self.current_packet.emit(packets[0])
                 except Exception as e:
                     print(f"Error occurred: {e}")
 
