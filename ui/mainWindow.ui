@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>1132</width>
-    <height>669</height>
+    <height>812</height>
    </rect>
   </property>
   <property name="sizePolicy">
@@ -15,6 +15,17 @@
     <horstretch>0</horstretch>
     <verstretch>0</verstretch>
    </sizepolicy>
+  </property>
+  <property name="font">
+   <font>
+    <pointsize>10</pointsize>
+   </font>
+  </property>
+  <property name="contextMenuPolicy">
+   <enum>Qt::DefaultContextMenu</enum>
+  </property>
+  <property name="acceptDrops">
+   <bool>true</bool>
   </property>
   <property name="windowTitle">
    <string>Form</string>
@@ -231,7 +242,7 @@
    <property name="geometry">
     <rect>
      <x>10</x>
-     <y>100</y>
+     <y>250</y>
      <width>1111</width>
      <height>551</height>
     </rect>
@@ -253,6 +264,37 @@
     </widget>
     <widget class="QTextEdit" name="textEdit"/>
    </widget>
+  </widget>
+  <widget class="QLabel" name="label">
+   <property name="geometry">
+    <rect>
+     <x>20</x>
+     <y>104</y>
+     <width>71</width>
+     <height>21</height>
+    </rect>
+   </property>
+   <property name="font">
+    <font>
+     <pointsize>12</pointsize>
+    </font>
+   </property>
+   <property name="text">
+    <string>protocol</string>
+   </property>
+  </widget>
+  <widget class="QLineEdit" name="lineEdit">
+   <property name="geometry">
+    <rect>
+     <x>100</x>
+     <y>100</y>
+     <width>361</width>
+     <height>30</height>
+    </rect>
+   </property>
+   <property name="clearButtonEnabled">
+    <bool>true</bool>
+   </property>
   </widget>
  </widget>
  <resources>

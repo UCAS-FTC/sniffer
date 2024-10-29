@@ -44,6 +44,8 @@ class MainWindowController(QObject, Analyser):
         self.main_window_view.minButton.clicked.connect(self.main_window_view.showMinimized)
         self.main_window_view.startButton.clicked.connect(self.doCapture)
         self.main_window_view.stopButton.clicked.connect(self.doPause)
+        self.main_window_view.restartButton.clicked.connect(self.doRestart)
+        self.main_window_view.filter.currentIndexChanged.connect(self.doFilter)
         self.main_window_view.tableWidget.cellClicked.connect(self.show_detail)
         self.main_window_view.tableWidget.cellClicked.connect(self.show_tree)
 
@@ -57,7 +59,7 @@ class MainWindowController(QObject, Analyser):
         # 设置开始捕获按钮不可用，并且设置暂停和重新捕获按钮可用
         self.main_window_view.startButton.setDisabled(True)
         self.main_window_view.stopButton.setEnabled(True)
-        self.main_window_view.restartButton.setEnabled(True)
+        self.main_window_view.restartButton.setEnabled(False)
 
         # 获取当前网卡
         interface = self.main_window_view.Interface.currentText()
@@ -75,12 +77,23 @@ class MainWindowController(QObject, Analyser):
         # 设置暂停按钮和重新捕获按钮不可用，并且设置开始捕获按钮可用
         self.main_window_view.startButton.setEnabled(True)
         self.main_window_view.stopButton.setDisabled(True)
-        self.main_window_view.restartButton.setDisabled(True)
+        self.main_window_view.restartButton.setDisabled(False)
         if self.catch_server.isActive:
             self.catch_server.isActive = False
 
     def doRestart(self) -> None:
-        pass
+        self.main_window_view.tableWidget.clear()  # 清空内容
+        self.main_window_view.tableWidget.setRowCount(0)
+        self.stored_packets = list()
+        self.catch_server._is_clear = True
+        self.doCapture()
+
+    def doFilter(self) -> None:
+        if self.main_window_view.tableWidget.rowCount() > 0: # 把表格中的数据进行过滤
+            self.main_window_view.tableWidget.clear()  # 清空内容
+            self.main_window_view.tableWidget.setRowCount(0)
+
+
 
     def safeQuit(self) -> None:
         """
@@ -119,7 +132,7 @@ class MainWindowController(QObject, Analyser):
         row_position = self.main_window_view.tableWidget.rowCount()
         self.main_window_view.tableWidget.insertRow(row_position)
 
-        self.main_window_view.tableWidget.setItem(row_position, 0, QTableWidgetItem(str(index)))
+        self.main_window_view.tableWidget.setItem(row_position, 0, QTableWidgetItem(str(row_position + 1)))
         self.main_window_view.tableWidget.setItem(row_position, 1, QTableWidgetItem(capture_time))
         self.main_window_view.tableWidget.setItem(row_position, 2, QTableWidgetItem(src_ip))
         self.main_window_view.tableWidget.setItem(row_position, 3, QTableWidgetItem(dst_ip))

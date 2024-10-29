@@ -19,6 +19,7 @@ class CatchServer(QObject, Analyser):
 
     _interface = None
     _is_active = False
+    _is_clear = False
     isQuit = False
     _counter = 0
     sniff_filter = ""
@@ -32,16 +33,19 @@ class CatchServer(QObject, Analyser):
         while True:
             if self.isQuit:
                 break
+            if self._is_clear:
+                index = 0
+                self._is_clear = False
             if self.isActive:
                 try:
                     self._counter = 0
-                    sniff_filter = "ether proto 0x0800 or ether proto 0x86dd or ether proto 0x11 or ether proto 0x0806"
+                    # sniff_filter = "ether proto 0x0800 or ether proto 0x86dd or ether proto 0x11 or ether proto 0x0806"
+                    sniff_filter = "tcp"
                     # 捕获一个数据包
                     packets = sniff(count=1, filter=sniff_filter, iface=self._interface)
 
                     # 处理数据包
                     for pkt in packets:
-
                         # 初始化数据
                         index += 1
                         capture_time = time.strftime('%Y-%m-%d %H:%M:%S', time.localtime())

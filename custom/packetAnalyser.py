@@ -55,9 +55,7 @@ class Analyser:
 
         # 应用层
         if packet.haslayer(TLS) and self.TransportLayer == "TCP":
-            self.ApplicationLayer = "TLS"
-        elif packet.haslayer(TCP) and packet[TCP].dport == 443:
-            self.ApplicationLayer = "SSL"
+            self.ApplicationLayer = "TLS/SSL"
         elif packet.haslayer(DNS) and self.TransportLayer == "UDP":
             self.ApplicationLayer = "DNS"
         elif packet.haslayer(FTP):
