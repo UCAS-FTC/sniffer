@@ -75,3 +75,21 @@ class Analyser:
             return self.NetworkLayer
         if self.DataLinkLayer != "":
             return self.DataLinkLayer
+
+    def getAllLayersDetail(self, pkt: Ether) -> dict:
+        """
+        :type pkt: scapy.layers.l2.Ether
+        :rtype: a dict --> contains all layers' detail info like this:{
+                "Ether": {xxx}
+                "IP": {xxx}
+                "TCP": {xxx}
+                ...}
+        :param pkt: a packet that you want to know its all layer info
+        """
+        packet_detail = {}
+        layers = pkt.layers()
+        for layer in layers:
+            layer = str(layer)
+            protocol = layer.split('.')[-1][:-2]
+            packet_detail[protocol] = pkt.getlayer(protocol).fields.items()
+        return packet_detail

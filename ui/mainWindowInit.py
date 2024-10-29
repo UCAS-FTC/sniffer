@@ -34,6 +34,10 @@ class mainWindowInit(Ui_Form, QtWidgets.QMainWindow):
         self.initTable()
         # 初始化下拉框控件
         self.initComboBox()
+        # 初始化textEdit控件
+        self.initEdit()
+        # 初始化树形结构
+        self.initTree()
 
     def initButtons(self):
         """
@@ -92,6 +96,12 @@ class mainWindowInit(Ui_Form, QtWidgets.QMainWindow):
 
         # 连接信号，选中一个单元格即选中这一行
         self.tableWidget.cellClicked.connect(self.select_row)
+
+    def initEdit(self):
+        self.textEdit.setReadOnly(True)
+
+    def initTree(self):
+        self.treeWidget.header().setVisible(False)
 
     def select_row(self, row):
         # 选择整行

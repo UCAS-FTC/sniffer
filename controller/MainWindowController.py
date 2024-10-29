@@ -4,7 +4,7 @@ import sys
 import psutil
 import scapy
 from PyQt6.QtCore import QObject, QThread, pyqtSlot, pyqtSignal, Qt
-from PyQt6.QtWidgets import QTableWidgetItem, QApplication, QTextEdit
+from PyQt6.QtWidgets import QTableWidgetItem, QApplication, QTextEdit, QTreeWidget, QTreeWidgetItem
 from qt_material import apply_stylesheet
 from scapy.all import *
 from scapy.layers.l2 import Ether
@@ -12,9 +12,10 @@ from scapy import interfaces
 
 from ui.mainWindowInit import mainWindowInit
 from controller.CatchModel import CatchServer
+from custom.packetAnalyser import Analyser
 
 
-class MainWindowController(QObject):
+class MainWindowController(QObject, Analyser):
     def __init__(self):
         super(MainWindowController, self).__init__()
         self.main_window_view = mainWindowInit()
@@ -44,7 +45,7 @@ class MainWindowController(QObject):
         self.main_window_view.startButton.clicked.connect(self.doCapture)
         self.main_window_view.stopButton.clicked.connect(self.doPause)
         self.main_window_view.tableWidget.cellClicked.connect(self.show_detail)
-        # self.main_window_view.treeWidget.clicked.connect(self.show_tree)
+        self.main_window_view.tableWidget.cellClicked.connect(self.show_tree)
 
         self.catch_server.current_packet.connect(self.storeTempCapturedPackets)
 
@@ -134,11 +135,31 @@ class MainWindowController(QObject):
         """
         textEdit = QTextEdit()
         textEdit.setReadOnly(True)
-        print(row)
         packet_detail = hexdump(self.stored_packets[row], dump=True)
-        print(packet_detail)
         self.main_window_view.textEdit.clear()  # 清除之前的内容
         self.main_window_view.textEdit.setPlainText(packet_detail)  # 设置详细信息
+
+    def show_tree(self, row: int) -> None:
+        """
+        显示所选择的数据包的详情
+        :rtype: None
+        :param row: int, chosen row
+        """
+        treeWidget = QTreeWidget()
+        treeWidget.header().setVisible(False)
+        treeWidget.setAnimated(True)
+        self.main_window_view.treeWidget.clear()  # 清空之前的树节点
+        packet_detail = self.getAllLayersDetail(self.stored_packets[row])
+
+        for layer in packet_detail:
+            # 添加一级树节点
+            root = QTreeWidgetItem(self.main_window_view.treeWidget)
+            root.setText(0, layer)
+
+            # 添加二级树节点
+            for key, item in packet_detail[layer]:
+                child = QTreeWidgetItem(root)
+                child.setText(0, "{} : {}".format(key, item))
 
     @pyqtSlot(scapy.layers.l2.Ether)
     def storeTempCapturedPackets(self, pkt: scapy.layers.l2.Ether) -> None:

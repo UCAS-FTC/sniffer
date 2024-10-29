@@ -24,8 +24,8 @@ class CatchServer(QObject, Analyser):
     sniff_filter = ""
 
     # 捕获包信号
-    current_packet = pyqtSignal(scapy.layers.l2.Ether)
-    packet_captured = pyqtSignal(int, str, str, str, str, int, str)  # 新增信号
+    current_packet = pyqtSignal(scapy.layers.l2.Ether) # 用于更新textEdit
+    packet_captured = pyqtSignal(int, str, str, str, str, int, str)  # 新增信号，用于更新表格
 
     def start_sniffing(self):
         index = 0
@@ -37,7 +37,6 @@ class CatchServer(QObject, Analyser):
                     self._counter = 0
                     sniff_filter = "ether proto 0x0800 or ether proto 0x86dd or ether proto 0x11 or ether proto 0x0806"
                     # 捕获一个数据包
-                    print(self._interface)
                     packets = sniff(count=1, filter=sniff_filter, iface=self._interface)
 
                     # 处理数据包
