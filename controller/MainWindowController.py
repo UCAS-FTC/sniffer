@@ -13,9 +13,10 @@ from scapy import interfaces
 from ui.mainWindowInit import mainWindowInit
 from controller.CatchModel import CatchServer
 from custom.packetAnalyser import Analyser
+from custom.filter import Filter
 
 
-class MainWindowController(QObject, Analyser):
+class MainWindowController(QObject, Analyser, Filter):
     def __init__(self):
         super(MainWindowController, self).__init__()
         self.main_window_view = mainWindowInit()
@@ -45,7 +46,7 @@ class MainWindowController(QObject, Analyser):
         self.main_window_view.startButton.clicked.connect(self.doCapture)
         self.main_window_view.stopButton.clicked.connect(self.doPause)
         self.main_window_view.restartButton.clicked.connect(self.doRestart)
-        self.main_window_view.filter.currentIndexChanged.connect(self.doFilter)
+        self.main_window_view.filterButton.clicked.connect(self.doFilter)
         self.main_window_view.tableWidget.cellClicked.connect(self.show_detail)
         self.main_window_view.tableWidget.cellClicked.connect(self.show_tree)
 
@@ -92,6 +93,15 @@ class MainWindowController(QObject, Analyser):
         if self.main_window_view.tableWidget.rowCount() > 0: # 把表格中的数据进行过滤
             self.main_window_view.tableWidget.clear()  # 清空内容
             self.main_window_view.tableWidget.setRowCount(0)
+        else:
+            self.catch_server.sniff_filter = self.filter(self.main_window_view.protocolPOB.currentText(),
+                                                         self.main_window_view.protocol.toPlainText(),
+                                                         self.main_window_view.portPOB.currentText(),
+                                                         self.main_window_view.port.toPlainText(),
+                                                         self.main_window_view.srcAddrPOB.currentText(),
+                                                         self.main_window_view.srcAddr.toPlainText(),
+                                                         self.main_window_view.dstAddrPOB.currentText(),
+                                                         self.main_window_view.dstAddr.toPlainText())
 
 
 

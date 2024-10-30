@@ -38,6 +38,8 @@ class mainWindowInit(Ui_Form, QtWidgets.QMainWindow):
         self.initEdit()
         # 初始化树形结构
         self.initTree()
+        # 初始化lineEdit控件
+        self.initLineEdit()
 
     def initButtons(self):
         """
@@ -73,8 +75,15 @@ class mainWindowInit(Ui_Form, QtWidgets.QMainWindow):
 
     def initComboBox(self):
         self.Interface.setStyleSheet("color: white;")  # 设置文字颜色和背景颜色
+        self.protocolPOB.setStyleSheet("color: white;")  # 设置文字颜色和背景颜色
+        self.portPOB.setStyleSheet("color: white;")  # 设置文字颜色和背景颜色
+        self.srcAddrPOB.setStyleSheet("color: white;")  # 设置文字颜色和背景颜色
+        self.dstAddrPOB.setStyleSheet("color: white;")  # 设置文字颜色和背景颜色
 
-        self.filter.addItems(["udp", ""])
+        self.protocolPOB.addItems(["ONLY", "BAN"])
+        self.portPOB.addItems(["ONLY", "BAN"])
+        self.srcAddrPOB.addItems(["ONLY", "BAN"])
+        self.dstAddrPOB.addItems(["ONLY", "BAN"])
 
     def initTable(self):
         """
@@ -89,7 +98,7 @@ class mainWindowInit(Ui_Form, QtWidgets.QMainWindow):
         self.tableWidget.setColumnCount(7)
 
         # 设置列宽
-        column_widths = [100, 120, 140, 140, 120, 140, 350]
+        column_widths = [100, 160, 160, 160, 160, 150, 400]
         for i, width in enumerate(column_widths):
             self.tableWidget.horizontalHeader().resizeSection(i, width)
 
@@ -104,6 +113,12 @@ class mainWindowInit(Ui_Form, QtWidgets.QMainWindow):
 
     def initTree(self):
         self.treeWidget.header().setVisible(False)
+
+    def initLineEdit(self):
+        self.protocol.setPlaceholderText("Example: udp, tcp")
+        self.port.setPlaceholderText("Example: udp port 80, tcp port 443")
+        self.srcAddr.setPlaceholderText("Example: 192.168.1.10, 192.168.1.20")
+        self.dstAddr.setPlaceholderText("Example: 192.168.1.10, 192.168.1.20")
 
     def select_row(self, row):
         # 选择整行

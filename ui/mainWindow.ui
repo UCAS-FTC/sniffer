@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>1132</width>
-    <height>812</height>
+    <width>1310</width>
+    <height>831</height>
    </rect>
   </property>
   <property name="sizePolicy">
@@ -18,7 +18,7 @@
   </property>
   <property name="font">
    <font>
-    <pointsize>10</pointsize>
+    <pointsize>12</pointsize>
    </font>
   </property>
   <property name="contextMenuPolicy">
@@ -35,7 +35,7 @@
     <rect>
      <x>10</x>
      <y>10</y>
-     <width>1111</width>
+     <width>1291</width>
      <height>48</height>
     </rect>
    </property>
@@ -55,7 +55,8 @@
        </size>
       </property>
       <property name="styleSheet">
-       <string notr="true">image: url(:/start.png);</string>
+       <string notr="true">image: url(:/start.png);
+border-color: rgb(255, 255, 255);</string>
       </property>
       <property name="text">
        <string/>
@@ -81,7 +82,8 @@
        </size>
       </property>
       <property name="styleSheet">
-       <string notr="true">image: url(:/pause.png);</string>
+       <string notr="true">image: url(:/pause.png);
+border-color: rgb(255, 255, 255);</string>
       </property>
       <property name="text">
        <string/>
@@ -103,7 +105,8 @@
        </size>
       </property>
       <property name="styleSheet">
-       <string notr="true">image: url(:/restart.png);</string>
+       <string notr="true">image: url(:/restart.png);
+border-color: rgb(255, 255, 255);</string>
       </property>
       <property name="text">
        <string/>
@@ -125,7 +128,8 @@
        </size>
       </property>
       <property name="styleSheet">
-       <string notr="true">image: url(:/download.png);</string>
+       <string notr="true">image: url(:/download.png);
+border-color: rgb(255, 255, 255);</string>
       </property>
       <property name="text">
        <string/>
@@ -151,6 +155,9 @@
         <width>300</width>
         <height>30</height>
        </size>
+      </property>
+      <property name="styleSheet">
+       <string notr="true">border-color: rgb(255, 255, 255);</string>
       </property>
      </widget>
     </item>
@@ -216,34 +223,12 @@
     </item>
    </layout>
   </widget>
-  <widget class="QComboBox" name="filter">
-   <property name="geometry">
-    <rect>
-     <x>10</x>
-     <y>60</y>
-     <width>1111</width>
-     <height>30</height>
-    </rect>
-   </property>
-   <property name="minimumSize">
-    <size>
-     <width>0</width>
-     <height>30</height>
-    </size>
-   </property>
-   <property name="maximumSize">
-    <size>
-     <width>16777215</width>
-     <height>30</height>
-    </size>
-   </property>
-  </widget>
   <widget class="QSplitter" name="splitter_2">
    <property name="geometry">
     <rect>
      <x>10</x>
-     <y>250</y>
-     <width>1111</width>
+     <y>260</y>
+     <width>1291</width>
      <height>551</height>
     </rect>
    </property>
@@ -262,38 +247,430 @@
       </property>
      </column>
     </widget>
-    <widget class="QTextEdit" name="textEdit"/>
+    <widget class="QTextEdit" name="textEdit">
+     <property name="styleSheet">
+      <string notr="true">border-color: rgb(255, 255, 255, 0);</string>
+     </property>
+    </widget>
    </widget>
   </widget>
-  <widget class="QLabel" name="label">
+  <widget class="QWidget" name="widget_2" native="true">
    <property name="geometry">
     <rect>
-     <x>20</x>
-     <y>104</y>
-     <width>71</width>
-     <height>21</height>
+     <x>30</x>
+     <y>60</y>
+     <width>1131</width>
+     <height>41</height>
+    </rect>
+   </property>
+   <layout class="QHBoxLayout" name="horizontalLayout_2">
+    <item>
+     <widget class="QLabel" name="label">
+      <property name="font">
+       <font>
+        <pointsize>15</pointsize>
+        <bold>true</bold>
+       </font>
+      </property>
+      <property name="text">
+       <string>protocol</string>
+      </property>
+     </widget>
+    </item>
+    <item>
+     <spacer name="horizontalSpacer_7">
+      <property name="orientation">
+       <enum>Qt::Horizontal</enum>
+      </property>
+      <property name="sizeHint" stdset="0">
+       <size>
+        <width>91</width>
+        <height>20</height>
+       </size>
+      </property>
+     </spacer>
+    </item>
+    <item>
+     <widget class="QComboBox" name="protocolPOB">
+      <property name="minimumSize">
+       <size>
+        <width>160</width>
+        <height>0</height>
+       </size>
+      </property>
+      <property name="maximumSize">
+       <size>
+        <width>160</width>
+        <height>16777215</height>
+       </size>
+      </property>
+     </widget>
+    </item>
+    <item>
+     <spacer name="horizontalSpacer_2">
+      <property name="orientation">
+       <enum>Qt::Horizontal</enum>
+      </property>
+      <property name="sizeHint" stdset="0">
+       <size>
+        <width>0</width>
+        <height>20</height>
+       </size>
+      </property>
+     </spacer>
+    </item>
+    <item>
+     <widget class="QTextEdit" name="protocol">
+      <property name="minimumSize">
+       <size>
+        <width>700</width>
+        <height>0</height>
+       </size>
+      </property>
+      <property name="maximumSize">
+       <size>
+        <width>700</width>
+        <height>16777215</height>
+       </size>
+      </property>
+      <property name="acceptDrops">
+       <bool>false</bool>
+      </property>
+      <property name="styleSheet">
+       <string notr="true">border-color: rgb(255, 255, 255);
+color: rgb(255, 255, 255);</string>
+      </property>
+      <property name="verticalScrollBarPolicy">
+       <enum>Qt::ScrollBarAlwaysOff</enum>
+      </property>
+      <property name="horizontalScrollBarPolicy">
+       <enum>Qt::ScrollBarAlwaysOff</enum>
+      </property>
+      <property name="acceptRichText">
+       <bool>false</bool>
+      </property>
+     </widget>
+    </item>
+   </layout>
+  </widget>
+  <widget class="QWidget" name="widget_3" native="true">
+   <property name="geometry">
+    <rect>
+     <x>30</x>
+     <y>110</y>
+     <width>1131</width>
+     <height>41</height>
+    </rect>
+   </property>
+   <layout class="QHBoxLayout" name="horizontalLayout_3">
+    <item>
+     <widget class="QLabel" name="label_2">
+      <property name="font">
+       <font>
+        <pointsize>15</pointsize>
+        <bold>true</bold>
+       </font>
+      </property>
+      <property name="text">
+       <string>port</string>
+      </property>
+     </widget>
+    </item>
+    <item>
+     <spacer name="horizontalSpacer_4">
+      <property name="orientation">
+       <enum>Qt::Horizontal</enum>
+      </property>
+      <property name="sizeHint" stdset="0">
+       <size>
+        <width>128</width>
+        <height>20</height>
+       </size>
+      </property>
+     </spacer>
+    </item>
+    <item>
+     <widget class="QComboBox" name="portPOB">
+      <property name="minimumSize">
+       <size>
+        <width>160</width>
+        <height>0</height>
+       </size>
+      </property>
+      <property name="maximumSize">
+       <size>
+        <width>160</width>
+        <height>16777215</height>
+       </size>
+      </property>
+     </widget>
+    </item>
+    <item>
+     <spacer name="horizontalSpacer_3">
+      <property name="orientation">
+       <enum>Qt::Horizontal</enum>
+      </property>
+      <property name="sizeHint" stdset="0">
+       <size>
+        <width>40</width>
+        <height>20</height>
+       </size>
+      </property>
+     </spacer>
+    </item>
+    <item>
+     <widget class="QTextEdit" name="port">
+      <property name="minimumSize">
+       <size>
+        <width>700</width>
+        <height>0</height>
+       </size>
+      </property>
+      <property name="maximumSize">
+       <size>
+        <width>700</width>
+        <height>16777215</height>
+       </size>
+      </property>
+      <property name="acceptDrops">
+       <bool>false</bool>
+      </property>
+      <property name="styleSheet">
+       <string notr="true">border-color: rgb(255, 255, 255);
+color: rgb(255, 255, 255);</string>
+      </property>
+      <property name="verticalScrollBarPolicy">
+       <enum>Qt::ScrollBarAlwaysOff</enum>
+      </property>
+      <property name="horizontalScrollBarPolicy">
+       <enum>Qt::ScrollBarAlwaysOff</enum>
+      </property>
+      <property name="acceptRichText">
+       <bool>false</bool>
+      </property>
+     </widget>
+    </item>
+   </layout>
+  </widget>
+  <widget class="QWidget" name="widget_4" native="true">
+   <property name="geometry">
+    <rect>
+     <x>30</x>
+     <y>160</y>
+     <width>1131</width>
+     <height>41</height>
+    </rect>
+   </property>
+   <layout class="QHBoxLayout" name="horizontalLayout_4">
+    <item>
+     <widget class="QLabel" name="label_3">
+      <property name="font">
+       <font>
+        <pointsize>15</pointsize>
+        <bold>true</bold>
+       </font>
+      </property>
+      <property name="text">
+       <string>srcAddr</string>
+      </property>
+     </widget>
+    </item>
+    <item>
+     <spacer name="horizontalSpacer_6">
+      <property name="orientation">
+       <enum>Qt::Horizontal</enum>
+      </property>
+      <property name="sizeHint" stdset="0">
+       <size>
+        <width>97</width>
+        <height>20</height>
+       </size>
+      </property>
+     </spacer>
+    </item>
+    <item>
+     <widget class="QComboBox" name="srcAddrPOB">
+      <property name="minimumSize">
+       <size>
+        <width>160</width>
+        <height>0</height>
+       </size>
+      </property>
+      <property name="maximumSize">
+       <size>
+        <width>160</width>
+        <height>16777215</height>
+       </size>
+      </property>
+     </widget>
+    </item>
+    <item>
+     <spacer name="horizontalSpacer_5">
+      <property name="orientation">
+       <enum>Qt::Horizontal</enum>
+      </property>
+      <property name="sizeHint" stdset="0">
+       <size>
+        <width>40</width>
+        <height>20</height>
+       </size>
+      </property>
+     </spacer>
+    </item>
+    <item>
+     <widget class="QTextEdit" name="srcAddr">
+      <property name="minimumSize">
+       <size>
+        <width>700</width>
+        <height>0</height>
+       </size>
+      </property>
+      <property name="maximumSize">
+       <size>
+        <width>700</width>
+        <height>16777215</height>
+       </size>
+      </property>
+      <property name="acceptDrops">
+       <bool>false</bool>
+      </property>
+      <property name="styleSheet">
+       <string notr="true">border-color: rgb(255, 255, 255);
+color: rgb(255, 255, 255);</string>
+      </property>
+      <property name="verticalScrollBarPolicy">
+       <enum>Qt::ScrollBarAlwaysOff</enum>
+      </property>
+      <property name="horizontalScrollBarPolicy">
+       <enum>Qt::ScrollBarAlwaysOff</enum>
+      </property>
+      <property name="acceptRichText">
+       <bool>false</bool>
+      </property>
+     </widget>
+    </item>
+   </layout>
+  </widget>
+  <widget class="QWidget" name="widget_6" native="true">
+   <property name="geometry">
+    <rect>
+     <x>30</x>
+     <y>210</y>
+     <width>1131</width>
+     <height>41</height>
+    </rect>
+   </property>
+   <layout class="QHBoxLayout" name="horizontalLayout_6">
+    <item>
+     <widget class="QLabel" name="label_5">
+      <property name="font">
+       <font>
+        <pointsize>15</pointsize>
+        <bold>true</bold>
+       </font>
+      </property>
+      <property name="text">
+       <string>dstAddr</string>
+      </property>
+     </widget>
+    </item>
+    <item>
+     <spacer name="horizontalSpacer_9">
+      <property name="orientation">
+       <enum>Qt::Horizontal</enum>
+      </property>
+      <property name="sizeHint" stdset="0">
+       <size>
+        <width>94</width>
+        <height>20</height>
+       </size>
+      </property>
+     </spacer>
+    </item>
+    <item>
+     <widget class="QComboBox" name="dstAddrPOB">
+      <property name="minimumSize">
+       <size>
+        <width>160</width>
+        <height>0</height>
+       </size>
+      </property>
+      <property name="maximumSize">
+       <size>
+        <width>160</width>
+        <height>16777215</height>
+       </size>
+      </property>
+     </widget>
+    </item>
+    <item>
+     <spacer name="horizontalSpacer_10">
+      <property name="orientation">
+       <enum>Qt::Horizontal</enum>
+      </property>
+      <property name="sizeHint" stdset="0">
+       <size>
+        <width>40</width>
+        <height>20</height>
+       </size>
+      </property>
+     </spacer>
+    </item>
+    <item>
+     <widget class="QTextEdit" name="dstAddr">
+      <property name="minimumSize">
+       <size>
+        <width>700</width>
+        <height>0</height>
+       </size>
+      </property>
+      <property name="maximumSize">
+       <size>
+        <width>700</width>
+        <height>16777215</height>
+       </size>
+      </property>
+      <property name="acceptDrops">
+       <bool>false</bool>
+      </property>
+      <property name="styleSheet">
+       <string notr="true">border-color: rgb(255, 255, 255);
+color: rgb(255, 255, 255);</string>
+      </property>
+      <property name="verticalScrollBarPolicy">
+       <enum>Qt::ScrollBarAlwaysOff</enum>
+      </property>
+      <property name="horizontalScrollBarPolicy">
+       <enum>Qt::ScrollBarAlwaysOff</enum>
+      </property>
+      <property name="acceptRichText">
+       <bool>false</bool>
+      </property>
+     </widget>
+    </item>
+   </layout>
+  </widget>
+  <widget class="QPushButton" name="filterButton">
+   <property name="geometry">
+    <rect>
+     <x>1190</x>
+     <y>60</y>
+     <width>101</width>
+     <height>191</height>
     </rect>
    </property>
    <property name="font">
     <font>
-     <pointsize>12</pointsize>
+     <pointsize>15</pointsize>
+     <bold>true</bold>
     </font>
    </property>
+   <property name="styleSheet">
+    <string notr="true">background-color: rgb(255, 242, 215);
+border-color: rgba(255, 255, 255, 0);</string>
+   </property>
    <property name="text">
-    <string>protocol</string>
-   </property>
-  </widget>
-  <widget class="QLineEdit" name="lineEdit">
-   <property name="geometry">
-    <rect>
-     <x>100</x>
-     <y>100</y>
-     <width>361</width>
-     <height>30</height>
-    </rect>
-   </property>
-   <property name="clearButtonEnabled">
-    <bool>true</bool>
+    <string>filter</string>
    </property>
   </widget>
  </widget>

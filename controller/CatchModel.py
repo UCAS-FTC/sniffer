@@ -39,10 +39,8 @@ class CatchServer(QObject, Analyser):
             if self.isActive:
                 try:
                     self._counter = 0
-                    # sniff_filter = "ether proto 0x0800 or ether proto 0x86dd or ether proto 0x11 or ether proto 0x0806"
-                    sniff_filter = "tcp"
                     # 捕获一个数据包
-                    packets = sniff(count=1, filter=sniff_filter, iface=self._interface)
+                    packets = sniff(count=1, filter=self.sniff_filter, iface=self._interface)
 
                     # 处理数据包
                     for pkt in packets:
