@@ -46,5 +46,4 @@ class Filter:
                 self.filStr += "and (not (dst host " + str(dstAddr).replace(",", " and dst host ")
                 self.filStr += ")"
             self.filStr += ")"
-        print(self.filStr)
         return self.filStr

@@ -95,15 +95,15 @@ class mainWindowInit(Ui_Form, QtWidgets.QMainWindow):
         # 取消表格默认行号
         self.tableWidget.verticalHeader().setHidden(True)
         # 设置表格列数为7
-        self.tableWidget.setColumnCount(7)
+        self.tableWidget.setColumnCount(8)
 
         # 设置列宽
-        column_widths = [100, 160, 160, 160, 160, 150, 400]
+        column_widths = [100, 160, 160, 160, 160, 150, 700, 500]
         for i, width in enumerate(column_widths):
             self.tableWidget.horizontalHeader().resizeSection(i, width)
 
         # 设置表头
-        self.tableWidget.setHorizontalHeaderLabels(["序号", "捕获时间", "源IP地址", "目的IP地址", "协议", "长度(字节)", "详细"])
+        self.tableWidget.setHorizontalHeaderLabels(["序号", "捕获时间", "源IP地址", "目的IP地址", "协议", "长度(字节)", "内容", "详细"])
 
         # 连接信号，选中一个单元格即选中这一行
         self.tableWidget.cellClicked.connect(self.select_row)
