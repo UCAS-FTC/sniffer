@@ -12,10 +12,10 @@ from PyQt6 import QtCore, QtGui, QtWidgets
 class Ui_steamTrace(object):
     def setupUi(self, steamTrace):
         steamTrace.setObjectName("steamTrace")
-        steamTrace.resize(1126, 697)
-        self.textEdit = QtWidgets.QTextEdit(parent=steamTrace)
-        self.textEdit.setGeometry(QtCore.QRect(13, 10, 1101, 681))
-        self.textEdit.setObjectName("textEdit")
+        steamTrace.resize(1200, 800)
+        self.widget = QtWidgets.QWidget(parent=steamTrace)
+        self.widget.setGeometry(QtCore.QRect(10, 10, 1190, 800))
+        self.widget.setObjectName("widget")
 
         self.retranslateUi(steamTrace)
         QtCore.QMetaObject.connectSlotsByName(steamTrace)
@@ -23,3 +23,13 @@ class Ui_steamTrace(object):
     def retranslateUi(self, steamTrace):
         _translate = QtCore.QCoreApplication.translate
         steamTrace.setWindowTitle(_translate("steamTrace", "Form"))
+
+
+if __name__ == "__main__":
+    import sys
+    app = QtWidgets.QApplication(sys.argv)
+    steamTrace = QtWidgets.QWidget()
+    ui = Ui_steamTrace()
+    ui.setupUi(steamTrace)
+    steamTrace.show()
+    sys.exit(app.exec())

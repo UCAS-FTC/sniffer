@@ -7,18 +7,18 @@
     <x>0</x>
     <y>0</y>
     <width>1126</width>
-    <height>697</height>
+    <height>702</height>
    </rect>
   </property>
   <property name="windowTitle">
    <string>Form</string>
   </property>
-  <widget class="QTextEdit" name="textEdit">
+  <widget class="QWidget" name="widget" native="true">
    <property name="geometry">
     <rect>
-     <x>13</x>
+     <x>10</x>
      <y>10</y>
-     <width>1101</width>
+     <width>1011</width>
      <height>681</height>
     </rect>
    </property>
