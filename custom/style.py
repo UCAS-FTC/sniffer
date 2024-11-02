@@ -4,12 +4,10 @@ close_style = '''QPushButton{background:#F76677;border-radius:10px;}
 min_style = '''QPushButton{background:#6DDF6D;border-radius:10px;}
                 QPushButton:hover{background:green;} 
                 '''
-doFilter_style = '''QPushButton{background:transparent;}   
-                '''
 normalButton_style = '''QPushButton:hover{background:gray;} 
                 '''
-sictLogo_style = '''QLabel {{background-image: url(./PySnifferUIFiles/resources/sict.png);}}
+ucas_style = '''QPushButton{background:white;border-radius:5px;color: #262626;border-color:transparent;}
                 '''
-save_types = """WireShark/... - pcapng (*.pcapng *.pcapng.gz *.pcapng.zst *.pcapng.lz4);;
-                WireShark/tcpdump/... - pcap (*.pcap *.pcap.gz *.pcap.zst *.pcap.lz4 *.cap *.cap.gz *.cap.zst *.cap.lz4)
-                """
+filter_style = '''QPushButton{background:#FFF2CC;color: #262626;border-color:white;}
+                QPushButton:hover{background:#FFE07D;} 
+                '''

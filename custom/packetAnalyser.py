@@ -7,6 +7,7 @@ from scapy.contrib.igmp import IGMP
 from scapy.layers.dns import DNS
 from scapy.layers.http import HTTP
 from scapy.layers.inet import IP, TCP, UDP, ICMP
+from scapy.layers.inet6 import IPv6
 from scapy.layers.l2 import Ether, ARP
 from scapy.layers.tls.record import TLS
 from scapy.packet import Raw
@@ -24,14 +25,14 @@ class Analyser:
         # 数据链路层
         if packet.haslayer(Ether):
             self.DataLinkLayer = "Ether"
-        elif packet.haslayer(ARP):
-            self.DataLinkLayer = "ARP"
 
         # 网络层
         if packet.haslayer(IP):
             self.NetworkLayer = "IPv4"
-        else:
+        elif packet.haslayer(IPv6):
             self.NetworkLayer = "IPv6"
+        elif packet.haslayer(ARP):
+            self.NetworkLayer = "ARP"
 
         # 传输层
         if packet.haslayer(TCP):
