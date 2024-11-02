@@ -12,10 +12,28 @@ from PyQt6 import QtCore, QtGui, QtWidgets
 class Ui_steamTrace(object):
     def setupUi(self, steamTrace):
         steamTrace.setObjectName("steamTrace")
-        steamTrace.resize(1200, 800)
+        steamTrace.resize(1126, 698)
         self.widget = QtWidgets.QWidget(parent=steamTrace)
-        self.widget.setGeometry(QtCore.QRect(10, 10, 1190, 800))
+        self.widget.setGeometry(QtCore.QRect(10, 60, 1111, 631))
         self.widget.setObjectName("widget")
+        self.widget_2 = QtWidgets.QWidget(parent=steamTrace)
+        self.widget_2.setGeometry(QtCore.QRect(1040, 10, 84, 48))
+        self.widget_2.setObjectName("widget_2")
+        self.horizontalLayout = QtWidgets.QHBoxLayout(self.widget_2)
+        self.horizontalLayout.setContentsMargins(0, 0, 0, 0)
+        self.horizontalLayout.setObjectName("horizontalLayout")
+        self.minimize = QtWidgets.QPushButton(parent=self.widget_2)
+        self.minimize.setMinimumSize(QtCore.QSize(30, 30))
+        self.minimize.setMaximumSize(QtCore.QSize(30, 30))
+        self.minimize.setText("")
+        self.minimize.setObjectName("minimize")
+        self.horizontalLayout.addWidget(self.minimize)
+        self.closeButton = QtWidgets.QPushButton(parent=self.widget_2)
+        self.closeButton.setMinimumSize(QtCore.QSize(30, 30))
+        self.closeButton.setMaximumSize(QtCore.QSize(30, 30))
+        self.closeButton.setText("")
+        self.closeButton.setObjectName("closeButton")
+        self.horizontalLayout.addWidget(self.closeButton)
 
         self.retranslateUi(steamTrace)
         QtCore.QMetaObject.connectSlotsByName(steamTrace)
@@ -23,13 +41,3 @@ class Ui_steamTrace(object):
     def retranslateUi(self, steamTrace):
         _translate = QtCore.QCoreApplication.translate
         steamTrace.setWindowTitle(_translate("steamTrace", "Form"))
-
-
-if __name__ == "__main__":
-    import sys
-    app = QtWidgets.QApplication(sys.argv)
-    steamTrace = QtWidgets.QWidget()
-    ui = Ui_steamTrace()
-    ui.setupUi(steamTrace)
-    steamTrace.show()
-    sys.exit(app.exec())

@@ -7,7 +7,7 @@ from PyQt6.QtWidgets import QPushButton, QApplication, QAbstractItemView
 from qt_material import apply_stylesheet
 
 from ui.mainWindow import Ui_Form
-from custom.style import min_style, close_style, normalButton_style
+from custom.style import min_style, close_style, normalButton_style, filter_style, ucas_style
 
 
 class mainWindowInit(Ui_Form, QtWidgets.QMainWindow):
@@ -60,19 +60,28 @@ class mainWindowInit(Ui_Form, QtWidgets.QMainWindow):
         restartpix = restartpix.scaled(QSize(80, 80))
         downloadpix = QPixmap("resources/download.png")
         downloadpix = downloadpix.scaled(QSize(80, 80))
+        openpix = QPixmap("resources/open.png")
+        openpix = openpix.scaled(QSize(100, 100))
+        ucaspix = QPixmap("resources/ucasSCST.png")
+        ucaspix = ucaspix.scaled(QSize(200, 200))
 
         # 将QPixmap应用到按钮
         self.startButton.setIcon(QIcon(catchpix))
         self.stopButton.setIcon(QIcon(pausepix))
         self.restartButton.setIcon(QIcon(restartpix))
         self.downloadButton.setIcon(QIcon(downloadpix))
+        self.openButton.setIcon(QIcon(openpix))
+        self.ucas.setIcon(QIcon(ucaspix))
+        self.filterButton.setText("filter")
+        self.filterButton.setStyleSheet("background-color: #FFF2CC; border-color: rgb(255, 255, 255); alternate-background-color: rgb(255, 255, 255); color: #262626")
 
         # 功能按钮应用自定义style（增加hover样式）
         for button in self.findChildren(QPushButton):
-            if button.objectName() not in ["closeButton", "minButton", "ucasLogoButton"]:
+            if button.objectName() not in ["closeButton", "minButton", "ucas", "filterButton"]:
                 button.setStyleSheet(normalButton_style)
         self.startButton.setStyleSheet(normalButton_style)
-
+        self.filterButton.setStyleSheet(filter_style)
+        self.ucas.setStyleSheet(ucas_style)
     def initComboBox(self):
         self.Interface.setStyleSheet("color: white;")  # 设置文字颜色和背景颜色
         self.protocolPOB.setStyleSheet("color: white;")  # 设置文字颜色和背景颜色
@@ -98,7 +107,7 @@ class mainWindowInit(Ui_Form, QtWidgets.QMainWindow):
         self.tableWidget.setColumnCount(8)
 
         # 设置列宽
-        column_widths = [100, 160, 160, 160, 160, 150, 700, 500]
+        column_widths = [100, 160, 160, 160, 160, 150, 700, 900]
         for i, width in enumerate(column_widths):
             self.tableWidget.horizontalHeader().resizeSection(i, width)
 
@@ -107,6 +116,12 @@ class mainWindowInit(Ui_Form, QtWidgets.QMainWindow):
 
         # 连接信号，选中一个单元格即选中这一行
         self.tableWidget.cellClicked.connect(self.select_row)
+
+        # 设置单元格字体和换行
+        self.tableWidget.setWordWrap(True)
+
+        # 根据内容调整行高
+        self.tableWidget.resizeRowsToContents()
 
     def initEdit(self):
         self.textEdit.setReadOnly(True)

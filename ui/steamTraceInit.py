@@ -1,10 +1,11 @@
 import sys
 
 from PyQt6 import QtCore, QtWidgets
-from PyQt6.QtGui import QMouseEvent
+from PyQt6.QtGui import QMouseEvent, QIcon
 from PyQt6.QtWidgets import QMainWindow, QApplication, QScrollArea, QWidget, QVBoxLayout
 from qt_material import apply_stylesheet
 
+from custom.style import min_style, close_style
 from ui.steamTrace import Ui_steamTrace
 class steamTraceInit(Ui_steamTrace, QtWidgets.QMainWindow):
     def __init__(self):
@@ -25,6 +26,11 @@ class steamTraceInit(Ui_steamTrace, QtWidgets.QMainWindow):
         # 设置窗口大小固定
         self.setFixedSize(self.width(), self.height())
 
+        self.minimize.setStyleSheet(min_style)
+        self.closeButton.setStyleSheet(close_style)
+        self.minimize.setIcon(QIcon("resources/minimize.png"))
+        self.closeButton.setIcon(QIcon("resources/close.png"))
+
     # 添加鼠标事件
     def mousePressEvent(self, event: QMouseEvent) -> None:
         if event.button() == QtCore.Qt.MouseButton.LeftButton:
@@ -40,6 +46,5 @@ class steamTraceInit(Ui_steamTrace, QtWidgets.QMainWindow):
 
 if __name__ == '__main__':
     app = QApplication(sys.argv)
-    apply_stylesheet(app, theme='dark_lightgreen.xml')
     w = steamTraceInit()
     sys.exit(app.exec())
