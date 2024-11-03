@@ -151,14 +151,17 @@ class MainWindowController(QObject, Analyser, Filter):
             self.filter_packets(bpf_filter)  # 筛选存储的数据包
 
     def doOpen(self) -> None:
-        self.main_window_view.tableWidget.clear()  # 清空内容
-        self.main_window_view.tableWidget.setRowCount(0)
-        self.stored_packets = list()
-        self.raw_packets.clear()
-
         fileName, _ = QFileDialog.getOpenFileName(None, "Open File", "", "PCAP Files (*.pcap);;All Files (*.txt)",)
+        if not fileName:  # 用户关闭对话框或未选择文件
+            return
+
         if fileName:
             try:
+                self.main_window_view.tableWidget.clear()  # 清空内容
+                self.main_window_view.tableWidget.setRowCount(0)
+                self.stored_packets = list()
+                self.raw_packets.clear()
+
                 packets = rdpcap(fileName)  # 读取pcap文件
 
                 self.raw_packets = packets
@@ -209,15 +212,42 @@ class MainWindowController(QObject, Analyser, Filter):
                 QMessageBox.critical(None, "Error", f"Could not open file: {e}")
 
     def doSave(self) -> None:
+        if self.main_window_view.tableWidget.rowCount() == 0:
+            msg_box = QMessageBox()
+            msg_box.setWindowTitle("提示")
+            msg_box.setText("没有可保存的数据！")
+            msg_box.setStyleSheet("background-color: white; color: black;")  # 设置底色为白色，字体为黑色
+            msg_box.exec()
+            return
         # 弹出文件选择框
         file_name, _ = QFileDialog.getSaveFileName(None, "保存数据包为", "captured_packets.pcap", "PCAP Files (*.pcap);;All Files (*)")
-        wrpcap(file_name, self.raw_packets)
+        if not file_name:  # 用户关闭对话框或未选择文件
+            return
+        else:
+            wrpcap(file_name, self.raw_packets)
 
     def safeQuit(self) -> None:
         """
         在退出程序时关闭线程
         :rtype: None
         """
+        # 创建确认对话框
+        msg_box = QMessageBox(self.main_window_view)
+        msg_box.setWindowTitle("确认退出")
+        msg_box.setText("是否保存文件？")
+        msg_box.setStandardButtons(
+            QMessageBox.StandardButton.Yes | QMessageBox.StandardButton.No | QMessageBox.StandardButton.Cancel)
+        msg_box.setDefaultButton(QMessageBox.StandardButton.Cancel)
+
+        # 显示对话框并获取用户的选择
+        reply = msg_box.exec()
+
+        if reply == QMessageBox.StandardButton.Yes:
+            # 进行保存操作（需要实现保存文件的逻辑）
+            self.doSave()  # 假设有一个 saveFile 方法负责保存文件
+        elif reply == QMessageBox.StandardButton.Cancel:
+            return  # 用户选择取消，停止退出
+
         self.catch_server.isQuit = True
         self.catch_thread.quit()
         self.main_window_view.close()
@@ -318,12 +348,8 @@ class MainWindowController(QObject, Analyser, Filter):
                 capture_time = datetime.fromtimestamp(timestamp).strftime('%Y-%m-%d %H:%M:%S')
 
                 # 源地址与目的地址
-                if pkt.haslayer(IP):
-                    src_ip = pkt[IP].src
-                    dst_ip = pkt[IP].dst
-                elif pkt.haslayer(IPv6):
-                    src_ip = pkt[IPv6].src
-                    dst_ip = pkt[IPv6].dst
+                src_ip = self.catch_server.Addr(pkt)[0]
+                dst_ip = self.catch_server.Addr(pkt)[1]
 
                 # 解析协议
                 self.DataLinkLayer = ""  # 数据链路层
@@ -335,8 +361,13 @@ class MainWindowController(QObject, Analyser, Filter):
                 if "200 OK" in details:
                     protocol = "HTTP"
 
+                info = self.catch_server.Info(pkt, protocol)
+
+                if "mDNS" in details:
+                    protocol = "MDNS"
+
                 # 更新表格
-                self.update_table(str(index + 1), capture_time, src_ip, dst_ip, protocol, length, details, self.catch_server._info)
+                self.update_table(str(index + 1), capture_time, src_ip, dst_ip, protocol, length, details, info)
         except Exception as e:
             print(f"Error occurred: {e}")
 
