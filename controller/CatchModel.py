@@ -7,8 +7,8 @@ from scapy.contrib.igmp import IGMP
 from scapy.layers.dns import DNS, DNSQR, DNSRR
 from scapy.layers.http import HTTPRequest, HTTP, HTTPResponse
 from scapy.layers.inet import IP, TCP, UDP, ICMP
-from scapy.layers.inet6 import IPv6, ICMPv6EchoRequest, ICMPv6EchoReply, ICMPv6ND_RA
-from scapy.layers.l2 import ARP
+from scapy.layers.inet6 import IPv6, ICMPv6EchoRequest, ICMPv6EchoReply, ICMPv6ND_RA, ICMPv6ND_NS, ICMPv6ND_NA
+from scapy.layers.l2 import ARP, Ether
 from scapy import arch
 from scapy.layers.tls.record import TLS
 import dns.message
@@ -79,6 +79,9 @@ class CatchServer(QObject, Analyser):
                         self._info = self.Info(pkt, protocol)
                         if "mDNS" in details:
                             protocol = "MDNS"
+                        if protocol == "Ether":
+                            protocol = str(hex(pkt[Ether].type))
+
                         # 发射信号更新表格
                         self.packet_captured.emit(index, capture_time, src_ip, dst_ip, str(protocol), length, details, self._info)
                         self.current_packet.emit(packets[0])
@@ -88,19 +91,27 @@ class CatchServer(QObject, Analyser):
     def Addr(self, pkt):
         details = pkt.summary()
         info = ""
+        src_ip = ""
+        dst_ip = ""
 
         # 源地址与目的地址
         if pkt.haslayer(ARP):
-            src_ip = pkt[ARP].hwsrc
-            dst_ip = pkt[ARP].hwdst
-        if pkt.haslayer(IP):
+            src_ip = pkt[Ether].src
+            dst_ip = pkt[Ether].dst
+        elif pkt.haslayer(IP):
             src_ip = pkt[IP].src
             dst_ip = pkt[IP].dst
         elif pkt.haslayer(IPv6):
             src_ip = pkt[IPv6].src
             dst_ip = pkt[IPv6].dst
-        else:  # 广播地址
-            src_ip = pkt["Ether"].src
+        else:
+            src_ip = pkt[Ether].src
+            dst_ip = pkt[Ether].dst
+
+        # 广播地址
+        if src_ip == "ff:ff:ff:ff:ff:ff":
+            src_ip = "Broadcast"
+        if dst_ip == "ff:ff:ff:ff:ff:ff":
             dst_ip = "Broadcast"
 
         return src_ip, dst_ip
@@ -121,23 +132,23 @@ class CatchServer(QObject, Analyser):
             temp = ""
             if flag.P == 1:
                 temp += "PSH"
-            elif flag.A == 1 and temp == "":
+            if flag.A == 1 and temp == "":
                 temp += "ACK"
             elif flag.A == 1:
                 temp += ", ACK"
-            elif flag.S == 1 and temp == "":
+            if flag.S == 1 and temp == "":
                 temp += "SYN"
             elif flag.S == 1:
                 temp += ", SYN"
-            elif flag.U == 1 and temp == "":
+            if flag.U == 1 and temp == "":
                 temp += "URG"
             elif flag.U == 1:
                 temp += ", URG"
-            elif flag.F == 1 and temp == "":
+            if flag.F == 1 and temp == "":
                 temp += "FIN"
             elif flag.F == 1:
                 temp += ", FIN"
-            elif flag.R == 1 and temp == "":
+            if flag.R == 1 and temp == "":
                 temp += "RST"
             elif flag.R == 1:
                 temp += ", RST"
@@ -147,7 +158,7 @@ class CatchServer(QObject, Analyser):
             info += "Win=" + str(pkt[TCP].window) + " Len=" + str(len(pkt[TCP].payload))
         elif protocol == "UDP":
             src_port = pkt[UDP].sport
-            dst_port = pkt[UDP].sport
+            dst_port = pkt[UDP].dport
             info += str(src_port) + " -> " + str(dst_port) + " "
             info += " Len=" + str(len(pkt[UDP].payload))
         elif protocol == "ARP":
@@ -171,7 +182,8 @@ class CatchServer(QObject, Analyser):
                 info = f"Destination Unreachable ({icmp_layer.code}) {ip_layer.dst}"
             else:
                 info = f"ICMP Type {icmp_layer.type} Code {icmp_layer.code}"
-        elif protocol == "ICMPv6":
+        elif protocol == "ICMPv6" or "ICMPv6" in details:
+            protocol = "ICMPv6"
             if pkt.haslayer(ICMPv6EchoRequest):
                 icmp_layer = pkt[ICMPv6EchoRequest]
                 ip_layer = pkt[IPv6]
@@ -185,84 +197,84 @@ class CatchServer(QObject, Analyser):
             elif pkt.haslayer(ICMPv6ND_RA):
                 ip_layer = pkt[IPv6]
                 info = f"Router Advertisement from {ip_layer.src}:"
+            elif pkt.haslayer(ICMPv6ND_NS) or pkt.haslayer(ICMPv6ND_NA):
+                ip_layer = pkt[IPv6]
+                info = f"Neighbor Solicitation for {ip_layer.dst} from {ip_layer.src}:"
             else:
                 ip_layer = pkt[IPv6]
                 info = f"Unknown Data from {ip_layer.src}"
         elif protocol == "DNS":
-            try:
-                dns_layer = pkt[DNS]
+            dns_layer = pkt[DNS]
 
-                info += "Standard query "
-                if dns_layer.qr == 0:  # 查询
-                    info += str(hex(dns_layer.id)) + " "
+            info += "Standard query "
+            if dns_layer.qr == 0:  # 查询
+                info += str(hex(dns_layer.id)) + " "
 
-                    if dns_layer.qdcount > 0:
-                        for qd in dns_layer.qd:
-                            if qd.qtype == 1:
-                                info += "A "
-                            elif qd.qtype == 28:
-                                info += "AAAA "
-                            elif qd.qtype == 6:
-                                info += "SOA "
-                            elif qd.qtype == 5:
-                                info += "CNAME "
-                            info += str(qd.qname.decode()) + " "
+                if dns_layer.qdcount > 0:
+                    for qd in dns_layer.qd:
+                        if qd.qtype == 1:
+                            info += "A "
+                        elif qd.qtype == 28:
+                            info += "AAAA "
+                        elif qd.qtype == 6:
+                            info += "SOA "
+                        elif qd.qtype == 5:
+                            info += "CNAME "
+                        info += str(qd.qname.decode()) + " "
 
-                else:  # 响应
-                    info += "response " + str(hex(dns_layer.id)) + " "
+            else:  # 响应
+                info += "response " + str(hex(dns_layer.id)) + " "
 
-                    if dns_layer.qdcount > 0:
-                        for qd in dns_layer.qd:
-                            if qd.qtype == 1:
-                                info += "A "
-                            elif qd.qtype == 28:
-                                info += "AAAA "
-                            elif qd.qtype == 6:
-                                info += "SOA "
-                            elif qd.qtype == 5:
-                                info += "CNAME "
-                            info += str(qd.qname.decode()) + " "
+                if dns_layer.qdcount > 0:
+                    for qd in dns_layer.qd:
+                        if qd.qtype == 1:
+                            info += "A "
+                        elif qd.qtype == 28:
+                            info += "AAAA "
+                        elif qd.qtype == 6:
+                            info += "SOA "
+                        elif qd.qtype == 5:
+                            info += "CNAME "
+                        info += str(qd.qname.decode()) + " "
 
-                    if dns_layer.ancount > 0:
-                        for answer in dns_layer.an:
-                            if answer.type == 1:
-                                info += "A "
-                            elif answer.type == 28:
-                                info += "AAAA "
-                            elif answer.type == 6:
-                                info += "SOA "
-                            elif answer.type == 5:
-                                info += "CNAME "
+                if dns_layer.ancount > 0:
+                    for answer in dns_layer.an:
+                        if answer.type == 1:
+                            info += "A "
+                        elif answer.type == 28:
+                            info += "AAAA "
+                        elif answer.type == 6:
+                            info += "SOA "
+                        elif answer.type == 5:
+                            info += "CNAME "
 
-                            if isinstance(answer.rdata, list):
-                                for data in answer.rdata:
-                                    if answer.type == 1 or answer.type == 28:
-                                        info += str(data) + " "
-                                    else:
-                                        info += str(data.decode()) + " "
-                            else:
+                        if isinstance(answer.rdata, list):
+                            for data in answer.rdata:
                                 if answer.type == 1 or answer.type == 28:
-                                    info += str(answer.rdata) + " "
+                                    info += str(data) + " "
                                 else:
-                                    info += str(answer.rdata.decode()) + " "
-
-                    if dns_layer.nscount > 0:
-                        for ns in dns_layer.ns:
-                            if ns.type == 1:
-                                info += "A "
-                            elif ns.type == 28:
-                                info += "AAAA "
-                            elif ns.type == 6:
-                                info += "SOA "
-                            elif ns.type == 5:
-                                info += "CNAME "
-
-                            if ns.type == 1 or ns.type == 28:
-                                info += str(ns.mname) + " "
+                                    info += str(data.decode()) + " "
+                        else:
+                            if answer.type == 1 or answer.type == 28:
+                                info += str(answer.rdata) + " "
                             else:
-                                info += str(ns.mname.decode()) + " "
-            except Exception as e:
-                print(f"Error occurred: {e}")
+                                info += str(answer.rdata.decode()) + " "
+
+                if dns_layer.nscount > 0:
+                    for ns in dns_layer.ns:
+                        if ns.type == 1:
+                            info += "A "
+                        elif ns.type == 28:
+                            info += "AAAA "
+                        elif ns.type == 6:
+                            info += "SOA "
+                        elif ns.type == 5:
+                            info += "CNAME "
+
+                        if ns.type == 1 or ns.type == 28:
+                            info += str(ns.mname) + " "
+                        else:
+                            info += str(ns.mname.decode()) + " "
         elif protocol == "HTTP":
             raw_data = pkt[HTTP]
             # 检查状态码

@@ -8,7 +8,7 @@ from PyQt6.QtWidgets import QTableWidgetItem, QApplication, QTextEdit, QTreeWidg
     QMessageBox
 from qt_material import apply_stylesheet
 from scapy.all import *
-from scapy.layers.inet import IP
+from scapy.layers.inet import IP, TCP, UDP
 from scapy.layers.inet6 import IPv6
 from scapy.layers.l2 import Ether
 from scapy.all import sniff
@@ -123,6 +123,8 @@ class MainWindowController(QObject, Analyser, Filter):
     def doRestart(self) -> None:
         self.main_window_view.tableWidget.clear()  # 清空内容
         self.main_window_view.tableWidget.setRowCount(0)
+        self.main_window_view.tableWidget.setHorizontalHeaderLabels(
+            ["序号", "捕获时间", "源IP地址", "目的IP地址", "协议", "长度(字节)", "内容", "详细"])
         self.stored_packets = list()
         self.catch_server._is_clear = True
         self.doCapture()
@@ -136,9 +138,12 @@ class MainWindowController(QObject, Analyser, Filter):
                                                      self.main_window_view.srcAddr.toPlainText(),
                                                      self.main_window_view.dstAddrPOB.currentText(),
                                                      self.main_window_view.dstAddr.toPlainText())
-        if self.main_window_view.tableWidget.rowCount() > 0:  # 把表格中的数据进行过滤
+        if self.raw_packets:  # 把表格中的数据进行过滤
             self.main_window_view.tableWidget.clear()  # 清空内容
             self.main_window_view.tableWidget.setRowCount(0)
+            # 设置表头
+            self.main_window_view.tableWidget.setHorizontalHeaderLabels(
+                ["序号", "捕获时间", "源IP地址", "目的IP地址", "协议", "长度(字节)", "内容", "详细"])
 
             bpf_filter = self.filter(self.main_window_view.protocolPOB.currentText(),
                                      self.main_window_view.protocol.toPlainText(),
@@ -201,6 +206,9 @@ class MainWindowController(QObject, Analyser, Filter):
 
                     if "mDNS" in details:
                         protocol = "MDNS"
+
+                    if protocol == "Ether":
+                        protocol = str(hex(pkt[Ether].type))
 
                     # 更新表格
                     self.update_table(str(index), capture_time, src_ip, dst_ip, protocol, length, details,
@@ -395,14 +403,38 @@ class MainWindowController(QObject, Analyser, Filter):
             protocol = "ip6"
         elif protocol == "http":
             protocol = ""
-            port = "tcp port 80 or tcp port 443"
+            port = "(tcp port 80 or tcp port 443)"
 
         if protocol != "":
             bpf_filter += protocol
         if port != "":
             bpf_filter = port
-        bpf_filter += (" and ((src host " + src_addr + " and dst host " + des_addr + ") or (src host " + des_addr +
-                       " and dst host " + src_addr + "))")
+
+        try:
+            src_port = ""
+            dst_port = ""
+            pkt = self.stored_packets[int(self.main_window_view.tableWidget.item(row, 0).text()) - 1]
+            if pkt.haslayer(TCP):
+                src_port = str(pkt[TCP].sport)
+                dst_port = str(pkt[TCP].dport)
+                bpf_filter += (" and ((src host " + src_addr + " and dst host " + des_addr + " and tcp src port " + src_port
+                               + " and tcp dst port " + dst_port + ") or (src host " + src_addr + " and dst host " +
+                               des_addr + " and tcp src port " + dst_port + " and tcp dst port " + src_port +
+                               ") or (src host " + des_addr + " and dst host " + src_addr + " and tcp src port " + src_port
+                               + " and tcp dst port " + dst_port + ") or (src host " + des_addr + " and dst host "
+                               + src_addr + " and tcp src port " + dst_port + " and tcp dst port " + src_port + "))")
+            elif pkt.haslayer(UDP):
+                src_port = str(pkt[UDP].sport)
+                dst_port = str(pkt[UDP].dport)
+                bpf_filter += (" and ((src host " + src_addr + " and dst host " + des_addr + " and udp src port " + src_port
+                               + " and udp dst port " + dst_port + ") or (src host " + src_addr + " and dst host " +
+                               des_addr + " and udp src port " + dst_port + " and udp dst port " + src_port +
+                               ") or (src host " + des_addr + " and dst host " + src_addr + " and udp src port " + src_port
+                               + " and udp dst port " + dst_port + ") or (src host " + des_addr + " and dst host "
+                               + src_addr + " and udp src port " + dst_port + " and udp dst port " + src_port + "))")
+        except Exception as e:
+            print(f"Error occurred: {e}")
+
 
         try:
             filtered_packets = sniff(offline=self.raw_packets, filter=bpf_filter)
