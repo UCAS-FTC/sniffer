@@ -3,6 +3,11 @@ class Filter:
 
     def filter(self, protocolPOB, protocol, portPOB, port, srcAddrPOB, srcAddr, dstAddrPOB, dstAddr) -> str:
         self.filStr = ""
+        protocol = str(protocol).lower()
+        port = str(port).lower()
+        srcAddr = str(srcAddr).lower()
+        dstAddr = str(dstAddr).lower()
+
         if protocol != "":
             self.filStr += "("
             if protocolPOB == "ONLY":
@@ -85,4 +90,6 @@ class Filter:
             self.filStr = self.filStr.replace("() and", " ")
         if "()" in self.filStr:
             self.filStr = self.filStr.replace("()", " ")
+
+        print(self.filStr)
         return self.filStr

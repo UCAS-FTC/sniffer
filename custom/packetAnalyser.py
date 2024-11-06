@@ -65,6 +65,10 @@ class Analyser:
             self.ApplicationLayer = "SMTP"
         elif packet.haslayer(TCP) and (packet[TCP].dport == 80) and packet.haslayer(HTTP):
             self.ApplicationLayer = "HTTP"
+        elif packet.haslayer(TCP) and (packet[TCP].dport == 22 or packet[TCP].sport == 22):
+            self.ApplicationLayer = "SSH"
+        elif packet.haslayer(TCP) and (packet[TCP].dport == 23 or packet[TCP].sport == 23):
+            self.ApplicationLayer = "Telnet"
 
         if self.ApplicationLayer != "":
             return self.ApplicationLayer
