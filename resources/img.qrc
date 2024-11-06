@@ -1,5 +1,6 @@
 <RCC>
   <qresource prefix="/">
+    <file>open.png</file>
     <file>close.png</file>
     <file>download.png</file>
     <file>minimize.png</file>
