@@ -44,18 +44,24 @@
      <widget class="QPushButton" name="ucas">
       <property name="minimumSize">
        <size>
-        <width>30</width>
-        <height>30</height>
+        <width>40</width>
+        <height>40</height>
        </size>
       </property>
       <property name="maximumSize">
        <size>
-        <width>30</width>
-        <height>30</height>
+        <width>40</width>
+        <height>40</height>
        </size>
       </property>
       <property name="text">
        <string/>
+      </property>
+      <property name="iconSize">
+       <size>
+        <width>32</width>
+        <height>32</height>
+       </size>
       </property>
      </widget>
     </item>
@@ -224,6 +230,31 @@ border-color: rgb(255, 255, 255);</string>
        </size>
       </property>
      </spacer>
+    </item>
+    <item>
+     <widget class="QPushButton" name="nameButton">
+      <property name="minimumSize">
+       <size>
+        <width>100</width>
+        <height>30</height>
+       </size>
+      </property>
+      <property name="maximumSize">
+       <size>
+        <width>100</width>
+        <height>30</height>
+       </size>
+      </property>
+      <property name="text">
+       <string/>
+      </property>
+      <property name="iconSize">
+       <size>
+        <width>32</width>
+        <height>64</height>
+       </size>
+      </property>
+     </widget>
     </item>
     <item>
      <widget class="QPushButton" name="minButton">

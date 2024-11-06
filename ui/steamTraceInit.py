@@ -13,6 +13,7 @@ class steamTraceInit(Ui_steamTrace, QtWidgets.QMainWindow):
 
         # 初始化ui
         self.hboxLayout = None
+        self.setStyleSheet("background-color: #F7F7F7;")  # 设置背景颜色
         self.setupUi(self)
 
         # 设置鼠标位置记录量,用于窗口拖动实现
@@ -30,6 +31,11 @@ class steamTraceInit(Ui_steamTrace, QtWidgets.QMainWindow):
         self.closeButton.setStyleSheet(close_style)
         self.minimize.setIcon(QIcon("resources/minimize.png"))
         self.closeButton.setIcon(QIcon("resources/close.png"))
+        self.steamtrace.setIcon(QIcon("resources/steamtrace.png"))
+        self.logo.setIcon(QIcon("resources/ucasSCST.png"))
+
+        self.logo.setStyleSheet("border-color: transparent")
+        self.steamtrace.setStyleSheet("border-color: transparent")
 
     # 添加鼠标事件
     def mousePressEvent(self, event: QMouseEvent) -> None:

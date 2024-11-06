@@ -64,6 +64,8 @@ class mainWindowInit(Ui_Form, QtWidgets.QMainWindow):
         openpix = openpix.scaled(QSize(100, 100))
         ucaspix = QPixmap("resources/ucasSCST.png")
         ucaspix = ucaspix.scaled(QSize(200, 200))
+        namepix = QPixmap("resources/name.png")
+        namepix = namepix.scaled(QSize(4000, 2000))
 
         # 将QPixmap应用到按钮
         self.startButton.setIcon(QIcon(catchpix))
@@ -72,12 +74,14 @@ class mainWindowInit(Ui_Form, QtWidgets.QMainWindow):
         self.downloadButton.setIcon(QIcon(downloadpix))
         self.openButton.setIcon(QIcon(openpix))
         self.ucas.setIcon(QIcon(ucaspix))
+        self.nameButton.setIcon(QIcon(namepix))
+        self.nameButton.setStyleSheet("border-color:transparent;")
         self.filterButton.setText("filter")
         self.filterButton.setStyleSheet("background-color: #FFF2CC; border-color: rgb(255, 255, 255); alternate-background-color: rgb(255, 255, 255); color: #262626")
 
         # 功能按钮应用自定义style（增加hover样式）
         for button in self.findChildren(QPushButton):
-            if button.objectName() not in ["closeButton", "minButton", "ucas", "filterButton"]:
+            if button.objectName() not in ["closeButton", "minButton", "ucas", "filterButton", "nameButton"]:
                 button.setStyleSheet(normalButton_style)
         self.startButton.setStyleSheet(normalButton_style)
         self.filterButton.setStyleSheet(filter_style)
@@ -155,6 +159,7 @@ class mainWindowInit(Ui_Form, QtWidgets.QMainWindow):
 if __name__ == '__main__':
     app = QApplication(sys.argv)
     apply_stylesheet(app, theme='dark_lightgreen.xml')
+    app.setWindowIcon(QIcon("resources/ucasSCST.png"))
     w = mainWindowInit()
     w.show()
     sys.exit(app.exec())
