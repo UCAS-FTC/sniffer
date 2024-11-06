@@ -3,6 +3,7 @@ import sys
 
 from PyQt6.QtWidgets import QApplication
 from qt_material import apply_stylesheet
+from scapy.config import conf
 
 from controller.MainWindowController import MainWindowController
 
